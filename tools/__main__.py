@@ -4,16 +4,27 @@ import os
 import dotenv
 import fire
 import httpx
+import jinja2
 
+from tools.cleaner import FilenameCleaner, HTMLCleaner
 from tools.cli import CLI
-from tools.fetcher import AsyncFetcherProtocol, AsyncFetcher
+from tools.fetcher import AsyncFetcher, AsyncFetcherProtocol
 from tools.parser import Parser
-from tools.sanitizer import Sanitizer
-from tools.urls import Endpoints, API_HOST
+from tools.renderers.course_info import CourseInfoRendered
+from tools.urls import API_HOST, Endpoints
+from tools.workspace import Workspace
 
 
 def get_client_credentials_from_env() -> tuple[str, str]:
-    return os.getenv("CLIENT_ID"), os.getenv("CLIENT_SECRET")
+    client_id = os.getenv("CLIENT_ID")
+    client_secret = os.getenv("CLIENT_SECRET")
+
+    if client_id is None:
+        raise ValueError("CLIENT_ID must be set in the environment")
+    if client_secret is None:
+        raise ValueError("CLIENT_SECRET must be set in the environment")
+
+    return client_id, client_secret
 
 
 async def get_access_token(
@@ -30,7 +41,7 @@ async def get_access_token(
     return data["access_token"]
 
 
-def update_access_token(client: httpx.AsyncClient, token: str) -> None:
+def inject_access_token_to_http_client(client: httpx.AsyncClient, token: str) -> None:
     client.headers.update({"Authorization": f"Bearer {token}"})
 
 
@@ -39,23 +50,37 @@ if __name__ == "__main__":
 
     event_loop = asyncio.get_event_loop()
 
-    client_instance = httpx.AsyncClient(base_url=API_HOST)
-    fetcher_instance = AsyncFetcher(client_instance)
-    parser_instance = Parser()
-    sanitizer_instance = Sanitizer()
+    http_client = httpx.AsyncClient(base_url=API_HOST)
+
+    fetcher = AsyncFetcher(http_client)
+    parser = Parser()
+
+    filename_sanitizer = FilenameCleaner()
+    html_sanitizer = HTMLCleaner()
+
+    workspace = Workspace(
+        "courses",
+        filename_sanitizer,
+    )
+
+    jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader("tools/templates"))
+    course_info_generator = CourseInfoRendered(
+        jinja_env.get_template("course_info.jinja"), html_sanitizer
+    )
 
     access_token = event_loop.run_until_complete(
         get_access_token(
             *get_client_credentials_from_env(),
-            fetcher=fetcher_instance,
+            fetcher=fetcher,
         )
     )
-    update_access_token(client_instance, access_token)
+    inject_access_token_to_http_client(http_client, access_token)
 
     fire.Fire(
         CLI(
-            fetcher=fetcher_instance,
-            parser=parser_instance,
-            sanitizer=sanitizer_instance,
+            workspace=workspace,
+            fetcher=fetcher,
+            parser=parser,
+            course_info_generator=course_info_generator,
         )
     )

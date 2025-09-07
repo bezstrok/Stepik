@@ -10,7 +10,9 @@ class AsyncFetcherProtocol(typing.Protocol):
     async def get(self, *args: typing.Any, **kwargs: typing.Any) -> typing.Any:
         pass
 
-    async def get_paginated(self, *args: typing.Any, **kwargs: typing.Any) -> list[typing.Any]:
+    async def get_paginated(
+        self, *args: typing.Any, **kwargs: typing.Any
+    ) -> list[typing.Any]:
         pass
 
 
@@ -28,7 +30,9 @@ class AsyncFetcher:
         response.raise_for_status()
         return response.json()
 
-    async def get_paginated(self, *args: typing.Any, **kwargs: typing.Any) -> list[typing.Any]:
+    async def get_paginated(
+        self, *args: typing.Any, **kwargs: typing.Any
+    ) -> list[typing.Any]:
         objects: list[typing.Any] = []
         page = 1
         while True:
