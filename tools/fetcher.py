@@ -21,12 +21,14 @@ class AsyncFetcher:
         self._client = client
 
     async def post(self, *args: typing.Any, **kwargs: typing.Any) -> typing.Any:
-        response = await self._client.post(*args, **kwargs)
+        params = self._expand_params(kwargs.pop("params", {}))
+        response = await self._client.post(*args, params=params, **kwargs)
         response.raise_for_status()
         return response.json()
 
     async def get(self, *args: typing.Any, **kwargs: typing.Any) -> typing.Any:
-        response = await self._client.get(*args, **kwargs)
+        params = self._expand_params(kwargs.pop("params", {}))
+        response = await self._client.get(*args, params=params, **kwargs)
         response.raise_for_status()
         return response.json()
 
@@ -43,3 +45,18 @@ class AsyncFetcher:
                 break
             page += 1
         return objects
+
+    @staticmethod
+    def _expand_params(
+        params: typing.Mapping[str, typing.Any],
+    ) -> list[tuple[str, typing.Any]]:
+        expanded: list[tuple[str, typing.Any]] = []
+        for key, value in params.items():
+            if isinstance(value, typing.Iterable) and not isinstance(
+                value, (str, bytes)
+            ):
+                for v in value:
+                    expanded.append((f"{key}[]", v))
+            else:
+                expanded.append((key, value))
+        return expanded

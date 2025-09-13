@@ -49,9 +49,13 @@ def inject_access_token_to_http_client(client: httpx.AsyncClient, token: str) ->
 if __name__ == "__main__":
     dotenv.load_dotenv()
 
-    event_loop = asyncio.get_event_loop()
+    event_loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(event_loop)
 
-    http_client = httpx.AsyncClient(base_url=API_HOST)
+    http_client = httpx.AsyncClient(
+        base_url=API_HOST,
+        follow_redirects=True,
+    )
 
     fetcher = AsyncFetcher(http_client)
     parser = Parser()

@@ -10,10 +10,14 @@ class CleanerProtocol(typing.Protocol):
 class FilenameCleaner:
     def __init__(self, repl: str = " ") -> None:
         self._repl = repl
-        self._pattern = re.compile(r'[<>:"/\\|?*]')
+        self._symbols_pattern = re.compile(r'[<>:"/\\|?*]')
+        self._space_pattern = re.compile(r"\s+")
 
     def clean(self, string: str) -> str:
-        return self._pattern.sub(self._repl, string)
+        filename = self._symbols_pattern.sub(self._repl, string)
+        filename = self._space_pattern.sub(" ", filename)
+        filename = filename.strip()
+        return filename
 
 
 class HTMLCleaner:
@@ -22,6 +26,6 @@ class HTMLCleaner:
         self._pattern = re.compile(r"<[^<]+?>")
 
     def clean(self, string: str) -> str:
-        clean_text = self._pattern.sub(self._repl, string).strip()
-        lines = [line.strip() for line in clean_text.splitlines() if line.strip()]
+        text = self._pattern.sub(self._repl, string).strip()
+        lines = [line.strip() for line in text.splitlines() if line.strip()]
         return "\n".join(line for line in lines if line)

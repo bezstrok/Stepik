@@ -27,11 +27,11 @@ class CLI:
 
     async def sync_course(self, course_id: int) -> str:
         course = await self._get_course(course_id)
-        self._save_course(course)
+        course_path = self._save_course(course)
 
         sections = await self._get_sections(course["sections"])
         for section in sections:
-            self._save_section(section)
+            self._save_section(course_path, section)
 
     def _save_section(
         self, course_path: str, section: typing.Mapping[str, typing.Any]
@@ -39,7 +39,9 @@ class CLI:
         name = section["title"]
         readme_content = self._section_generator.render(section)
         section_path = self._workspace.create_section_dir(
-            course_path, name, readme_content
+            course_path,
+            name,
+            readme_content,
         )
         return section_path
 
