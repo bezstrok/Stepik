@@ -8,8 +8,8 @@ class ParserProtocol(typing.Protocol):
     def extract_objects(self, data: typing.Any) -> list[dict[str, typing.Any]]:
         pass
 
-    def extract_objects_from_list(
-        self, data_list: typing.Iterable[typing.Any]
+    def extract_objects_from_iterable(
+        self, it: typing.Iterable[typing.Any]
     ) -> list[dict[str, typing.Any]]:
         pass
 
@@ -25,16 +25,16 @@ class Parser:
         key = next(iter(d for d in data if d != "meta"))
         return list(map(dict, data[key]))
 
-    def extract_objects_from_list(
-        self, data_list: typing.Iterable[typing.Any]
+    def extract_objects_from_iterable(
+        self, it: typing.Iterable[typing.Any]
     ) -> list[dict[str, typing.Any]]:
-        data_list = list(data_list)
-        if not data_list:
+        list_data = list(it)
+        if not list_data:
             return []
-        if not all(isinstance(data, typing.Mapping) for data in data_list):
-            raise TypeError(f"Expected list of mappings, got {type(data_list[0])}")
-        key = next(iter(d for d in data_list[0] if d != "meta"))
+        if not all(isinstance(data, typing.Mapping) for data in list_data):
+            raise TypeError(f"Expected list of mappings, got {type(list_data[0])}")
+        key = next(iter(d for d in list_data[0] if d != "meta"))
         objects: list[dict[str, typing.Any]] = []
-        for data in data_list:
-            objects.extend(data[key])
+        for list_data in list_data:
+            objects.extend(list_data[key])
         return objects

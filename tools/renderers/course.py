@@ -6,12 +6,12 @@ import jinja2
 from tools.cleaner import CleanerProtocol
 
 
-class CourseInfoGeneratorRenderer(typing.Protocol):
-    def render(self, course_info: dict[str, typing.Any]) -> str:
+class CourseRendererProtocol(typing.Protocol):
+    def render(self, course: dict[str, typing.Any]) -> str:
         pass
 
 
-class CourseInfoRendered:
+class CourseRendered:
     def __init__(
         self,
         template: jinja2.Template,
@@ -20,7 +20,7 @@ class CourseInfoRendered:
         self._template = template
         self._sanitizer = sanitizer
 
-    def render(self, course_info: dict[str, typing.Any]) -> str:
-        context = copy.deepcopy(course_info)
+    def render(self, course: dict[str, typing.Any]) -> str:
+        context = copy.deepcopy(course)
         context["description"] = self._sanitizer.clean(context["description"])
         return self._template.render(context)

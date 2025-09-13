@@ -1,0 +1,15 @@
+# {{ section.position }}. {{ section.title | trim }}
+
+{% if section.description %}
+> {{ section.description | trim }}
+{% endif %}
+
+## Основная информация
+
+- **ID Секции**: `{{ section.id }}`
+- **ID Курса**: `{{ section.course }}`
+- **Позиция в курсе**: {{ section.position }}
+- **Дата создания**: {{ section.create_date }}
+{% if section.update_date %}
+- **Последнее обновление**: {{ section.update_date }}
+{% endif %}

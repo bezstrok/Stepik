@@ -8,10 +8,9 @@ class WorkspaceProtocol(typing.Protocol):
     def create_course_dir(self, name: str, readme_content: str) -> str:
         pass
 
-    def create_lesson_dir(self, name: str, readme_content: str) -> str:
-        pass
-
-    def create_unit_dir(self, name: str, readme_content: str) -> str:
+    def create_section_dir(
+        self, course_path: str, name: str, readme_content: str
+    ) -> str:
         pass
 
 
@@ -28,8 +27,12 @@ class Workspace:
         readme_path.write_text(readme_content)
         return str(course_path)
 
-    def create_lesson_dir(self, name: str, readme_content: str) -> str:
-        return ""
-
-    def create_unit_dir(self, name: str, readme_content: str) -> str:
-        return ""
+    def create_section_dir(
+        self, course_path: str, name: str, readme_content: str
+    ) -> str:
+        name = self._filename_cleaner.clean(name)
+        section_path = pathlib.Path(course_path) / name
+        section_path.mkdir(exist_ok=True)
+        readme_path = section_path / "README.md"
+        readme_path.write_text(readme_content)
+        return str(section_path)

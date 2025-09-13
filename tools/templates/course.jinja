@@ -4,7 +4,7 @@
 > {{ summary | trim }}
 {% endif %}
 
-### Основная информация
+## Основная информация
 
 - **ID Курса**: {{ id }}
 - **Язык**: {{ language }}
@@ -12,20 +12,20 @@
 - **Ссылка**: [{{ canonical_url }}]({{ canonical_url }})
 
 {% if description %}
-### Описание
+## Описание
 
 {{ description }}
 {% endif %}
 
 {% if acquired_skills %}
-### Получаемые навыки
+## Получаемые навыки
 {% for skill in acquired_skills %}
 - {{ skill }}
 {%- endfor %}
 {% endif %}
 
 {% if acquired_assets %}
-### Что вы получите
+## Что вы получите
 {% for asset in acquired_assets %}
 - {{ asset }}
 {%- endfor %}

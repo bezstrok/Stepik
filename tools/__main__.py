@@ -10,7 +10,8 @@ from tools.cleaner import FilenameCleaner, HTMLCleaner
 from tools.cli import CLI
 from tools.fetcher import AsyncFetcher, AsyncFetcherProtocol
 from tools.parser import Parser
-from tools.renderers.course_info import CourseInfoRendered
+from tools.renderers.course import CourseRendered
+from tools.renderers.section import SectionRendered
 from tools.urls import API_HOST, Endpoints
 from tools.workspace import Workspace
 
@@ -64,8 +65,13 @@ if __name__ == "__main__":
     )
 
     jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader("tools/templates"))
-    course_info_generator = CourseInfoRendered(
-        jinja_env.get_template("course_info.jinja"), html_sanitizer
+    course_generator = CourseRendered(
+        jinja_env.get_template("course.jinja"),
+        html_sanitizer,
+    )
+    section_generator = SectionRendered(
+        jinja_env.get_template("section.jinja"),
+        html_sanitizer,
     )
 
     access_token = event_loop.run_until_complete(
@@ -81,6 +87,7 @@ if __name__ == "__main__":
             workspace=workspace,
             fetcher=fetcher,
             parser=parser,
-            course_info_generator=course_info_generator,
+            course_generator=course_generator,
+            section_generator=section_generator,
         )
     )
