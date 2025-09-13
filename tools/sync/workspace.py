@@ -1,7 +1,7 @@
 import pathlib
 import typing
 
-from tools.cleaner import CleanerProtocol
+from .cleaner import CleanerProtocol
 
 
 class WorkspaceProtocol(typing.Protocol):

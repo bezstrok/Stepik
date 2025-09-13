@@ -3,11 +3,11 @@ import typing
 
 import jinja2
 
-from tools.cleaner import CleanerProtocol
+from ..cleaner import CleanerProtocol
 
 
 class SectionRendererProtocol(typing.Protocol):
-    def render(self, section: dict[str, typing.Any]) -> str:
+    def render(self, section: typing.Mapping[str, typing.Any]) -> str:
         pass
 
 
@@ -20,7 +20,7 @@ class SectionRendered:
         self._template = template
         self._sanitizer = sanitizer
 
-    def render(self, section: dict[str, typing.Any]) -> str:
-        context = copy.deepcopy(section)
+    def render(self, section: typing.Mapping[str, typing.Any]) -> str:
+        context = dict(copy.deepcopy(section))
         context["description"] = self._sanitizer.clean(context["description"])
         return self._template.render(context)

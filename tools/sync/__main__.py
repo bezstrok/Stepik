@@ -6,14 +6,14 @@ import fire
 import httpx
 import jinja2
 
-from tools.cleaner import FilenameCleaner, HTMLCleaner
-from tools.cli import CLI
-from tools.fetcher import AsyncFetcher, AsyncFetcherProtocol
-from tools.parser import Parser
-from tools.renderers.course import CourseRendered
-from tools.renderers.section import SectionRendered
-from tools.urls import API_HOST, Endpoints
-from tools.workspace import Workspace
+from .cleaner import FilenameCleaner, HTMLCleaner
+from .cli import CLI
+from .fetcher import AsyncFetcher, AsyncFetcherProtocol
+from .parser import Parser
+from .renderers.course import CourseRendered
+from .renderers.section import SectionRendered
+from .urls import API_HOST, Endpoints
+from .workspace import Workspace
 
 
 def get_client_credentials_from_env() -> tuple[str, str]:
@@ -68,7 +68,7 @@ if __name__ == "__main__":
         filename_sanitizer,
     )
 
-    jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader("tools/templates"))
+    jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader("tools/sync/templates"))
     course_generator = CourseRendered(
         jinja_env.get_template("course.jinja"),
         html_sanitizer,

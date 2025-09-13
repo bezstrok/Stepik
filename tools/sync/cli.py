@@ -1,12 +1,12 @@
 import typing
 from urllib.parse import urljoin
 
-from tools.fetcher import AsyncFetcherProtocol
-from tools.parser import ParserProtocol
-from tools.renderers.course import CourseRendererProtocol
-from tools.renderers.section import SectionRendererProtocol
-from tools.urls import Endpoints
-from tools.workspace import WorkspaceProtocol
+from .fetcher import AsyncFetcherProtocol
+from .parser import ParserProtocol
+from .renderers.course import CourseRendererProtocol
+from .renderers.section import SectionRendererProtocol
+from .urls import Endpoints
+from .workspace import WorkspaceProtocol
 
 
 class CLI:
@@ -25,7 +25,7 @@ class CLI:
         self._course_generator = course_generator
         self._section_generator = section_generator
 
-    async def sync_course(self, course_id: int) -> str:
+    async def sync_course(self, course_id: int) -> None:
         course = await self._get_course(course_id)
         course_path = self._save_course(course)
 
